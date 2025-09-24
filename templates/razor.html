@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Razorpay Checkout</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+    <h1>Pay with Razorpay</h1>
+    <p>Order ID: {{ .OrderId }}</p>
+    <p>Amount: ₹{{ .AmountToPay }}</p>
+    <button id="rzp-button">Pay Now</button>
+    <form id="verify-form" method="POST" action="/order/razor/success" style="display:none;">
+        <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+        <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+        <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+        <input type="hidden" name="payment_id" id="payment_id" value="{{ .PaymentId }}">
+    </form>
+    <script>
+        var options = {
+            key: "{{ .RazorpayKey }}",
+            amount: Number("{{ .Total }}"), // ensure it's a number for JS
+            currency: "INR",
+            order_id: "{{ .OrderId }}",
+            handler: function (response){
+                document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+                document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+                document.getElementById('razorpay_signature').value = response.razorpay_signature;
+                document.getElementById('verify-form').submit();
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        document.getElementById('rzp-button').onclick = function(e){
+            rzp1.open();
+            e.preventDefault();
+        }
+    </script>
+</body>
+</html> 

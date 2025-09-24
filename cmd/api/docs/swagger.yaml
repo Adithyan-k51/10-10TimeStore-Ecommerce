@@ -1,0 +1,1163 @@
+definitions:
+  domain.Admin:
+    properties:
+      admin_name:
+        maxLength: 12
+        minLength: 4
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      password:
+        maxLength: 15
+        minLength: 8
+        type: string
+    required:
+    - password
+    type: object
+  requests.Addcount:
+    properties:
+      count:
+        minimum: 1
+        type: integer
+      product_id:
+        type: integer
+    required:
+    - product_id
+    type: object
+  requests.AddressReq:
+    properties:
+      city:
+        type: string
+      district:
+        type: string
+      house_number:
+        type: string
+      landmark:
+        type: string
+      pincode:
+        type: string
+      street:
+        type: string
+    type: object
+  requests.Category:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  requests.Coupon:
+    properties:
+      code:
+        type: string
+      discount_percent:
+        type: number
+      expiry_date:
+        type: string
+      maximum_discount_price:
+        type: number
+      minimum_purchase_price:
+        type: number
+      usage_limits:
+        type: integer
+    required:
+    - code
+    - discount_percent
+    - expiry_date
+    - maximum_discount_price
+    - minimum_purchase_price
+    - usage_limits
+    type: object
+  requests.Login:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  requests.OTPreq:
+    properties:
+      Phone:
+        type: string
+    required:
+    - Phone
+    type: object
+  requests.Otpverifier:
+    properties:
+      Phone:
+        type: string
+      pin:
+        type: string
+    required:
+    - Phone
+    - pin
+    type: object
+  requests.Product:
+    properties:
+      brand:
+        type: string
+      categoryid:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      prize:
+        type: integer
+      qty_in_stock:
+        type: integer
+    required:
+    - brand
+    - categoryid
+    - description
+    - name
+    type: object
+  requests.Update:
+    properties:
+      order_id:
+        type: integer
+      status_id:
+        type: integer
+    required:
+    - order_id
+    - status_id
+    type: object
+  requests.Usersign:
+    properties:
+      email:
+        type: string
+      mobile:
+        type: string
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - mobile
+    - name
+    - password
+    type: object
+  response.Response:
+    properties:
+      data: {}
+      error: {}
+      message:
+        type: string
+      stastuscode:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /Addwishlist/{product_id}:
+    post:
+      operationId: AddToWishList
+      parameters:
+      - description: product_id
+        in: path
+        name: product_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: successfully added product to wishlist
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: invalid input
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api to add a product to wish list
+      tags:
+      - Wishlist
+  /Removewishlist/{product_id}:
+    delete:
+      operationId: RemoveFromWishList
+      parameters:
+      - description: product_id
+        in: path
+        name: product_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: successfully removed product item from wishlist
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: invalid input
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api to remove a product from wish list
+      tags:
+      - Wishlist
+  /SaveAddress:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the specified details.
+      operationId: Add_Adress
+      parameters:
+      - description: Input Field
+        in: body
+        name: inputs
+        required: true
+        schema:
+          $ref: '#/definitions/requests.AddressReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: AddAdrress_for_user
+      tags:
+      - Users
+  /UpdateAddress:
+    patch:
+      consumes:
+      - application/json
+      description: Update user Adresses.
+      operationId: Update_Adress
+      parameters:
+      - description: Input Field
+        in: body
+        name: inputs
+        required: true
+        schema:
+          $ref: '#/definitions/requests.AddressReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: updateAdrress_for_user
+      tags:
+      - Users
+  /admin/category/add:
+    post:
+      consumes:
+      - application/json
+      description: Admin can create new category from admin panel
+      operationId: create-category
+      parameters:
+      - description: New category name
+        in: body
+        name: category_name
+        required: true
+        schema:
+          $ref: '#/definitions/requests.Category'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create new product category
+      tags:
+      - Product Category
+  /admin/category/delete/{category_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Admin can delete a category
+      operationId: delete-category
+      parameters:
+      - description: category_id
+        in: path
+        name: category_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Admin can delete a category
+      tags:
+      - Product Category
+  /admin/category/disply/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Users and admins can fetch details of a specific category using
+        id
+      operationId: find-category-by-id
+      parameters:
+      - description: category id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Fetch details of a specific category using category id
+      tags:
+      - Product Category
+  /admin/category/update/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Admin can update category details
+      operationId: update-category
+      parameters:
+      - description: ID of the Category to be updated
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: category info
+        in: body
+        name: category_details
+        required: true
+        schema:
+          $ref: '#/definitions/requests.Category'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Admin can update category details
+      tags:
+      - Product Category
+  /admin/coupon/AddCoupons:
+    post:
+      description: Admin can add coupon
+      operationId: AddCoupon
+      parameters:
+      - description: Input true info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/requests.Coupon'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for add Coupons for ecommerce
+      tags:
+      - Coupon
+  /admin/coupon/Delete/{CouponID}:
+    delete:
+      consumes:
+      - application/json
+      description: Admin can delete a coupon
+      operationId: delete-coupon
+      parameters:
+      - description: CouponID
+        in: path
+        name: CouponID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Admin can delete a coupon
+      tags:
+      - Coupon
+  /admin/coupon/Update/{CouponID}:
+    patch:
+      consumes:
+      - application/json
+      description: Admin can update existing coupon
+      operationId: update-coupon
+      parameters:
+      - description: CouponID
+        in: path
+        name: CouponID
+        required: true
+        type: integer
+      - description: details of coupon to be updated
+        in: body
+        name: coupon_details
+        required: true
+        schema:
+          $ref: '#/definitions/requests.Coupon'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Admin can update existing coupon
+      tags:
+      - Coupon
+  /admin/coupon/Viewcoupon/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Admins can see Coupons with coupon_id
+      operationId: find-Coupon-by-id
+      parameters:
+      - description: CouponID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Admins can see Coupons with coupon_id
+      tags:
+      - Coupon
+  /admin/coupon/couponlist:
+    get:
+      consumes:
+      - application/json
+      description: Endpoint for getting all coupons
+      operationId: List-all-coupons
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get all coupons
+      tags:
+      - Coupon
+  /admin/login:
+    post:
+      consumes:
+      - application/json
+      description: login admin with details.
+      operationId: LoginAdmin
+      parameters:
+      - description: Input Field
+        in: body
+        name: inputs
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Admin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      tags:
+      - Admin
+  /admin/logout:
+    post:
+      description: Logout as a user exit from the ecommerce site
+      operationId: AdminLogout
+      responses:
+        "200":
+          description: success
+        "400":
+          description: failed
+      summary: Adminlogout
+      tags:
+      - Admin
+  /admin/order/Allorders:
+    get:
+      consumes:
+      - application/json
+      operationId: FindAllordersInshop
+      parameters:
+      - description: Page number for pagination
+        in: query
+        name: page
+        type: integer
+      - description: Number of items to retrieve per page
+        in: query
+        name: perPage
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: FindAllorders In admin side
+      tags:
+      - Order
+  /admin/order/Status:
+    get:
+      consumes:
+      - application/json
+      description: Endpoint for getting all orderStatuses
+      operationId: List-all-orderStatus
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: for geting all order status list
+      tags:
+      - Order
+  /admin/order/UpdateStatus:
+    patch:
+      consumes:
+      - application/json
+      description: update the order statuses by every orderid.
+      operationId: Order_status
+      parameters:
+      - description: Input Field
+        in: body
+        name: inputs
+        required: true
+        schema:
+          $ref: '#/definitions/requests.Update'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Updateorderstatus
+      tags:
+      - Order
+  /admin/product/ViewProduct/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Admins and users can see products with product id
+      operationId: find-product-by-id
+      parameters:
+      - description: product id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Admins and users can see products with product id
+      tags:
+      - Product
+  /admin/product/delete/{product_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Admin can delete a product
+      operationId: delete-product
+      parameters:
+      - description: product_id
+        in: path
+        name: product_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Admin can delete a product
+      tags:
+      - Product
+  /admin/product/updateproduct/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Admin can update Product details
+      operationId: update-Product
+      parameters:
+      - description: ID of the product to be updated
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Product info
+        in: body
+        name: category_details
+        required: true
+        schema:
+          $ref: '#/definitions/requests.Product'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Admin can update Product details
+      tags:
+      - Product
+  /admin/signup:
+    post:
+      consumes:
+      - application/json
+      description: Save admin with details.
+      operationId: SaveAdmin
+      parameters:
+      - description: Input Field
+        in: body
+        name: inputs
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Admin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: SaveAdmin
+      tags:
+      - Admin
+  /admin/unblock/{user_id}:
+    patch:
+      consumes:
+      - application/json
+      description: Admin can unblock a blocked user
+      operationId: unblock-user
+      parameters:
+      - description: ID of the user to be unblocked
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Admin can unblock a blocked user
+      tags:
+      - Admin
+  /cart/Addcount:
+    put:
+      consumes:
+      - application/json
+      description: user can delete their cartitems by id
+      operationId: Add-Qantity
+      parameters:
+      - description: Input Field
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/requests.Addcount'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Admin can delete a category
+      tags:
+      - Cart
+  /cart/viewcart:
+    get:
+      description: user can see all productItem that stored in cart
+      operationId: Cart
+      responses:
+        "200":
+          description: successfully got user cart items
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: faild to get cart items
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for get all cart item of user
+      tags:
+      - Cart
+  /coupon/apply:
+    patch:
+      consumes:
+      - application/json
+      description: User can apply coupon to the cart
+      operationId: apply-coupon-to-cart
+      parameters:
+      - description: Coupon code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: User can apply a coupon to the cart
+      tags:
+      - Cart
+  /coupon/coupons:
+    get:
+      consumes:
+      - application/json
+      description: Endpoint for getting all coupons in user side
+      operationId: List-all-coupons-user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get all coupons for users
+      tags:
+      - Coupon
+  /home:
+    get:
+      responses:
+        "200":
+          description: success
+        "400":
+          description: failed
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login as a user to access the ecommerce site
+      operationId: UserLogin
+      parameters:
+      - description: Input Field
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/requests.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: User Login
+      tags:
+      - Users
+  /logout:
+    post:
+      description: Logout as a user exit from the ecommerce site
+      operationId: UserLogout
+      responses:
+        "200":
+          description: success
+        "400":
+          description: failed
+      summary: User Login
+      tags:
+      - Users
+  /order/cancel/{orderId}:
+    patch:
+      consumes:
+      - application/json
+      description: Endpoint for cancelling an order associated with a user
+      operationId: cancel-order
+      parameters:
+      - description: ID of the order to be cancelled
+        in: path
+        name: orderId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Cancels a specific order for the currently logged in user
+      tags:
+      - Order
+  /order/listall:
+    get:
+      consumes:
+      - application/json
+      description: Endpoint for getting all orders
+      operationId: List-all-orders
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: for geting all order list
+      tags:
+      - Order
+  /order/orderAll/{payment_id}:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint allows a user to purchase all items in their cart
+      operationId: buyAll
+      parameters:
+      - description: payment_id
+        in: path
+        name: payment_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Buy all items from the user's cart
+      tags:
+      - Order
+  /order/return/{orderId}:
+    patch:
+      consumes:
+      - application/json
+      description: Endpoint for Returning an order associated with a user
+      operationId: return-order
+      parameters:
+      - description: ID of the order to be cancelled
+        in: path
+        name: orderId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Return a specific order for the currently logged in user
+      tags:
+      - Order
+  /order/view/{order_id}:
+    get:
+      consumes:
+      - application/json
+      description: retrieving the details of a specific order identified by its order
+        ID.
+      operationId: view-order-by-id
+      parameters:
+      - description: Order ID
+        in: path
+        name: order_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully fetched order details
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Failed to fetch order details
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: to get order details
+      tags:
+      - Order
+  /otp/send:
+    post:
+      consumes:
+      - application/json
+      description: Send OTP to use's mobile
+      operationId: send-otp
+      parameters:
+      - description: User mobile number
+        in: body
+        name: user_mobile
+        required: true
+        schema:
+          $ref: '#/definitions/requests.OTPreq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Send OTP to user's mobile
+      tags:
+      - Otp
+  /otp/verify:
+    post:
+      consumes:
+      - application/json
+      description: Validate the  OTP sent to use's mobile
+      operationId: validate-otp
+      parameters:
+      - description: OTP sent to user's mobile number
+        in: body
+        name: otp
+        required: true
+        schema:
+          $ref: '#/definitions/requests.Otpverifier'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Validate the OTP to user's mobile
+      tags:
+      - Otp
+  /signup:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the specified details.
+      operationId: UserSignup
+      parameters:
+      - description: Input Field
+        in: body
+        name: inputs
+        required: true
+        schema:
+          $ref: '#/definitions/requests.Usersign'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: UserSignUp
+      tags:
+      - Users
+  /user/product/ViewAllProducts:
+    get:
+      consumes:
+      - application/json
+      description: users can ses all available products
+      operationId: user-view-all-products
+      parameters:
+      - description: Page number for pagination
+        in: query
+        name: page
+        type: integer
+      - description: Number of items to retrieve per page
+        in: query
+        name: perPage
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Admins and users can see all available products
+      tags:
+      - Product
+  /viewAddress:
+    get:
+      description: user can see their Adress
+      operationId: User_Address
+      responses:
+        "200":
+          description: successfully get Address
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: faild to get Address
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: api for get address of user
+      tags:
+      - Users
+  /wishlist:
+    get:
+      operationId: GetWishListI
+      responses:
+        "200":
+          description: Wish list is empty
+        "400":
+          description: faild to get user wish list items
+      security:
+      - ApiKeyAuth: []
+      summary: api get all wish list items of user
+      tags:
+      - Wishlist
+swagger: "2.0"

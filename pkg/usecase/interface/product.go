@@ -1,0 +1,22 @@
+package interfaces
+
+import (
+	"context"
+	"ecommerce/pkg/commonhelp/requests.go"
+	"ecommerce/pkg/commonhelp/response"
+)
+
+type ProductUsecase interface {
+	Addcategory(ctx context.Context, req requests.Category) (response.Category, error)
+	UpdateCategory(ctx context.Context, category requests.Category, id int) (response.Category, error)
+	DeleteCategory(ctx context.Context, Id int) error
+	Listallcategory(ctx context.Context) ([]response.Category, error)
+	ShowCatagory(ctx context.Context, Id int) (response.Category, error)
+	SaveProduct(ctx context.Context, product requests.Product) (response.Product, error)
+	UpdateProduct(ctx context.Context, id int, product requests.Product) (response.Product, error)
+	DeleteProduct(ctx context.Context, id int) error
+	ViewAllProducts(ctx context.Context, pagination requests.Pagination) (products []response.Product, err error)
+	VeiwProduct(ctx context.Context, id int) (response.Product, error)
+	SearchProducts(ctx context.Context, query string) ([]requests.Product, error)
+	GetProductsByPriceRange(min, max *float64) ([]requests.Product, error)
+}
